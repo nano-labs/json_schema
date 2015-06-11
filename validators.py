@@ -201,3 +201,55 @@ class RegexValidator:
         """Validador de fato do bool."""
         regex = re.compile(item_schema.replace("regex:", ""))
         return True if regex.match(item) else False
+
+
+class AnyValidator:
+
+    u"""
+    Classe apenas para agrupar os metodos do validador.
+
+    Validação:
+        Aceita qualquer coisa
+
+    Formatos possíveis:
+        "any"
+
+    Ex:
+        "any"
+    """
+
+    @classmethod
+    def schema_lookout(cls, schema):
+        """Checa se dado schema deve ser validado por este Validator."""
+        return schema.startswith("any")
+
+    @classmethod
+    def validator(cls, item, item_schema):
+        """Como pode ser qualquer coisa sempre retorna True."""
+        return True
+
+
+class NullValidator:
+
+    u"""
+    Classe apenas para agrupar os metodos do validador.
+
+    Validação:
+        Checa se o valor é "null"
+
+    Formatos possíveis:
+        "null"
+
+    Ex:
+        "null"
+    """
+
+    @classmethod
+    def schema_lookout(cls, schema):
+        """Checa se dado schema deve ser validado por este Validator."""
+        return schema == "null"
+
+    @classmethod
+    def validator(cls, item, item_schema):
+        """Como pode ser qualquer coisa sempre retorna True."""
+        return item is None
