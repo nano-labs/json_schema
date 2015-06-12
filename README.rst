@@ -15,10 +15,97 @@ You may use it for whatever you want :)
 Features
 --------
 
-- Export schema form a given JSON
+- Export schema for a given JSON
 - Validate a given schema
 - Check if a given JSON matches a given schema
 - Highlight any unmatched data between JSON and schema
+
+Usage
+-----
+
+json_schema.loads()
+"""""""""""""""""""
+Load schema function. Receive a schema and return and JsonSchema object instance.
+::
+
+    In [1]: import json_schema
+
+    In [2]: my_schema = '{"my_key": "int:0:10|string"}'
+
+    In [3]: my_schema_object = json_schema.loads(my_schema)
+
+    In [4]: my_schema_object
+    Out[4]: <json_schema.JsonSchema at 0x10aa96f10>
+
+json_schema.dumps()
+"""""""""""""""""""
+Dump schema function. Receive a JSON and return an automaticaly created schema. Its very userful when working with some large or complex JSON. Be aware that you may have to adapt its returned schema to work with your JSON variations. For example, if your JSON have some optional value that, this time, is null the schema created will expect that that value is AWAYS null.
+:: 
+
+    In [1]: import json_schema
+
+    In [2]: my_json = '{"parrot": ["is no more", "It has ceased to be"], "ex-parrot": true, "volts": 2000}'
+
+    In [3]: my_automatic_schema = json_schema.dumps(my_json)
+
+    In [4]: my_automatic_schema
+    Out[4]: '{"ex-parrot": "bool", "parrot": ["string", "..."], "volts": "int"}'
+
+
+json_schema.match()
+"""""""""""""""""""
+Check if a given JSON matches a given schema.
+::
+
+    In [1]: import json_schema
+
+    In [2]: my_json = '{"parrot": ["is no more", "It has ceased to be"], "ex-parrot": true, "volts": 2000}'
+
+    In [3]: my_schema = '{"ex-parrot": "bool", "parrot": ["string", "..."], "volts": "int"}'
+
+    In [4]: json_schema.match(my_json, my_schema)
+    Out[4]: True
+
+
+JsonSchema Object
+"""""""""""""""""
+Object that contains all validations e checkups for that given schema.
+
+JsonSchema.full_check()
+"""""""""""""""""""""""
+Check and highlights any errors found.
+::
+
+    In [1]: import json_schema
+
+    In [2]: my_schema = '{"ex-parrot": "bool", "parrot": ["string", "..."], "volts": "int"}'
+
+    In [3]: JS = json_schema.loads(my_schema)
+
+    In [4]: my_json = '{"parrot": ["is no more", "It has ceased to be"], "ex-parrot": true, "volts": 2000}'
+
+    In [5]: JS.full_check(my_json)
+    {
+        "ex-parrot": true, 
+        "parrot": [
+            true, 
+            true
+        ], 
+        "volts": true
+    }
+
+    In [6]: other_json = '{"parrot": ["is no more", "It has ceased to be"], "ex-parrot": true, "volts": "foobar"}'
+
+    In [7]: JS.full_check(other_json)
+    {
+        "ex-parrot": true, 
+        "parrot": [
+            true, 
+            true
+        ], 
+        "volts": "'foobar' should match 'int'"
+    }
+
 
 Usage Exemple
 -------------
@@ -207,7 +294,7 @@ Validation is made using the folowing python regular expression code
 
 
 bool
-"""
+""""
 
 Will match only if that given JSON data is boolean.
 
@@ -220,214 +307,6 @@ Will match only:
 
     '{"my_key": true}'
     '{"my_key": false}'
-
-
-JSON Schema
-===========
-
-Use this Lib to create a structure schema of a given JSON and also to check if a given JSON matches a given schema.
-
-
-Why Should I Use This?
-----------------------
-
-I made this for use when validating a JSON REST API using Behave. I wanted to be sure that the JSON's structure is correct, no matter it's content.
-
-You may use it for whatever you want :)
-
-
-Features
---------
-
-- Export schema form a given JSON
-- Validate a given schema
-- Check if a given JSON matches a given schema
-- Highlight any unmatched data between JSON and schema
-
-Usage Exemple
--------------
-
-::
-
-    In [1]: import json_schema
-
-    In [2]: um_json = '''{"chave_list": [1, 2],
-                          "chave_dict": {"chave": "valor"},
-                          "chave_int": 1,
-                          "chave_float": 1.2,
-                          "chave_string": "1"}'''
-
-    In [3]: esquema = json_schema.dumps(um_json)
-
-    In [4]: print esquema
-    {"chave_list": ["int", "..."], "chave_dict": {"chave": "string"}, "chave_int": "int", "chave_float": "float", "chave_string": "string"}
-
-    In [5]: js = json_schema.loads(esquema)
-
-    In [6]: js
-    Out[6]: <json_schema.JsonSchema at 0x1064f0f50>
-
-    In [7]: js == um_json
-    Out[7]: True
-
-
-Validators
-----------
-
-string
-""""""
-
-Will match only if that given JSON data is string.
-
-::
-
-    '{"my_key": "string"}'
-
-Will match any of those:
-::
-
-    '{"my_key": "my_value"}'
-    '{"my_key": "my value"}'
-    '{"my_key": ""}'
-    '{"my_key": "123"}'
-    '{"my_key": "3.567"}'
-
-It my have max length limit using "string:max_len"
-
-::
-
-    '{"my_key": "string:3"}'
-
-Will match any of those:
-::
-
-    '{"my_key": ""}'
-    '{"my_key": "a"}'
-    '{"my_key": "ab"}'
-    '{"my_key": "abc"}'
-    '{"my_key": "123"}'
-
-But not match those:
-::
-
-    '{"my_key": "abcd"}'
-    '{"my_key": "abcde"}'
-    '{"my_key": "1234"}'
-
-
-int
-"""
-
-Will match only if that given JSON data is integer.
-
-::
-
-    '{"my_key": "int"}'
-
-Will match any of those:
-::
-
-    '{"my_key": 0}'
-    '{"my_key": 1}'
-    '{"my_key": 12345}'
-    '{"my_key": -1}'
-    '{"my_key": -123}'
-
-It my have min:max value limit using "int:min:max"
-
-::
-
-    '{"my_key": "int:-3:3"}'
-
-Will match any of those:
-::
-
-    '{"my_key": 0}'
-    '{"my_key": -1}'
-    '{"my_key": -3}'
-    '{"my_key": 1}'
-    '{"my_key": 3}'
-
-But not match those:
-::
-
-    '{"my_key": -4}'
-    '{"my_key": 4}'
-    '{"my_key": 12345}'
-
-
-float
-"""""
-
-Same as int but for float values
-::
-
-    '{"my_key": "float"}'
-
-Will match any of those:
-::
-
-    '{"my_key": 0.0}'
-    '{"my_key": 1.1}'
-    '{"my_key": 123.45}'
-    '{"my_key": -1.1}'
-    '{"my_key": -12.3}'
-
-It my have min:max value limit using "float:min:max"
-
-::
-
-    '{"my_key": "float:-3.1:3.5"}'
-
-Will match any of those:
-::
-
-    '{"my_key": 0.0}'
-    '{"my_key": -1.2}'
-    '{"my_key": -3.1}'
-    '{"my_key": 1.0}'
-    '{"my_key": 3.5}'
-
-But not match those:
-::
-
-    '{"my_key": -4.0}'
-    '{"my_key": 4.0}'
-    '{"my_key": 123.45}'
-    '{"my_key": 2}'
-
-
-url
-"""
-
-Will match only if that given JSON data is a string that contains a valid URL.
-
-::
-
-    '{"my_key": "url"}'
-
-Will match any of those:
-::
-
-    '{"my_key": "http://example.com"}'
-    '{"my_key": "https://example.com"}'
-    '{"my_key": "ftp://example.com"}'
-    '{"my_key": "ftps://example.com"}'
-
-Validation is made using the folowing python regular expression code
-::
-
-    regex = re.compile(r'^(?:http|ftp)s?://'  # HTTP, HTTPS, FTP, FTPS
-                       # Dominio
-                       r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'
-                       # Localhost
-                       r'localhost|'
-                       # IP
-                       r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
-                       # Porta
-                       r'(?::\d+)?'
-                       r'(?:/?|[/?]\S+)$', re.IGNORECASE)
-    return True if regex.match(item) else False
 
 
 regex
