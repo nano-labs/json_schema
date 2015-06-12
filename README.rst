@@ -89,3 +89,546 @@ But not match those:
     '{"my_key": "abcd"}'
     '{"my_key": "abcde"}'
     '{"my_key": "1234"}'
+
+
+int
+"""
+
+Will match only if that given JSON data is integer.
+
+::
+
+    '{"my_key": "int"}'
+
+Will match any of those:
+::
+
+    '{"my_key": 0}'
+    '{"my_key": 1}'
+    '{"my_key": 12345}'
+    '{"my_key": -1}'
+    '{"my_key": -123}'
+
+It my have min:max value limit using "int:min:max"
+
+::
+
+    '{"my_key": "int:-3:3"}'
+
+Will match any of those:
+::
+
+    '{"my_key": 0}'
+    '{"my_key": -1}'
+    '{"my_key": -3}'
+    '{"my_key": 1}'
+    '{"my_key": 3}'
+
+But not match those:
+::
+
+    '{"my_key": -4}'
+    '{"my_key": 4}'
+    '{"my_key": 12345}'
+
+
+float
+"""""
+
+Same as int but for float values
+::
+
+    '{"my_key": "float"}'
+
+Will match any of those:
+::
+
+    '{"my_key": 0.0}'
+    '{"my_key": 1.1}'
+    '{"my_key": 123.45}'
+    '{"my_key": -1.1}'
+    '{"my_key": -12.3}'
+
+It my have min:max value limit using "float:min:max"
+
+::
+
+    '{"my_key": "float:-3.1:3.5"}'
+
+Will match any of those:
+::
+
+    '{"my_key": 0.0}'
+    '{"my_key": -1.2}'
+    '{"my_key": -3.1}'
+    '{"my_key": 1.0}'
+    '{"my_key": 3.5}'
+
+But not match those:
+::
+
+    '{"my_key": -4.0}'
+    '{"my_key": 4.0}'
+    '{"my_key": 123.45}'
+    '{"my_key": 2}'
+
+
+url
+"""
+
+Will match only if that given JSON data is a string that contains a valid URL.
+
+::
+
+    '{"my_key": "url"}'
+
+Will match any of those:
+::
+
+    '{"my_key": "http://exemple.com"}'
+    '{"my_key": "https://exemple.com"}'
+    '{"my_key": "ftp://exemple.com"}'
+    '{"my_key": "ftps://exemple.com"}'
+
+Validation is made using the folowing python regular expression code
+::
+
+    regex = re.compile(r'^(?:http|ftp)s?://'  # HTTP, HTTPS, FTP, FTPS
+                       # Dominio
+                       r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'
+                       # Localhost
+                       r'localhost|'
+                       # IP
+                       r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
+                       # Porta
+                       r'(?::\d+)?'
+                       r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+    return True if regex.match(item) else False
+
+
+bool
+"""
+
+Will match only if that given JSON data is boolean.
+
+::
+
+    '{"my_key": "bool"}'
+
+Will match only:
+::
+
+    '{"my_key": true}'
+    '{"my_key": false}'
+
+
+JSON Schema
+===========
+
+Use this Lib to create a structure schema of a given JSON and also to check if a given JSON matches a given schema.
+
+
+Why Should I Use This?
+----------------------
+
+I made this for use when validating a JSON REST API using Behave. I wanted to be sure that the JSON's structure is correct, no matter it's content.
+
+You may use it for whatever you want :)
+
+
+Features
+--------
+
+- Export schema form a given JSON
+- Validate a given schema
+- Check if a given JSON matches a given schema
+- Highlight any unmatched data between JSON and schema
+
+Usage Exemple
+-------------
+
+::
+
+    In [1]: import json_schema
+
+    In [2]: um_json = '''{"chave_list": [1, 2],
+                          "chave_dict": {"chave": "valor"},
+                          "chave_int": 1,
+                          "chave_float": 1.2,
+                          "chave_string": "1"}'''
+
+    In [3]: esquema = json_schema.dumps(um_json)
+
+    In [4]: print esquema
+    {"chave_list": ["int", "..."], "chave_dict": {"chave": "string"}, "chave_int": "int", "chave_float": "float", "chave_string": "string"}
+
+    In [5]: js = json_schema.loads(esquema)
+
+    In [6]: js
+    Out[6]: <json_schema.JsonSchema at 0x1064f0f50>
+
+    In [7]: js == um_json
+    Out[7]: True
+
+
+Validators
+----------
+
+string
+""""""
+
+Will match only if that given JSON data is string.
+
+::
+
+    '{"my_key": "string"}'
+
+Will match any of those:
+::
+
+    '{"my_key": "my_value"}'
+    '{"my_key": "my value"}'
+    '{"my_key": ""}'
+    '{"my_key": "123"}'
+    '{"my_key": "3.567"}'
+
+It my have max length limit using "string:max_len"
+
+::
+
+    '{"my_key": "string:3"}'
+
+Will match any of those:
+::
+
+    '{"my_key": ""}'
+    '{"my_key": "a"}'
+    '{"my_key": "ab"}'
+    '{"my_key": "abc"}'
+    '{"my_key": "123"}'
+
+But not match those:
+::
+
+    '{"my_key": "abcd"}'
+    '{"my_key": "abcde"}'
+    '{"my_key": "1234"}'
+
+
+int
+"""
+
+Will match only if that given JSON data is integer.
+
+::
+
+    '{"my_key": "int"}'
+
+Will match any of those:
+::
+
+    '{"my_key": 0}'
+    '{"my_key": 1}'
+    '{"my_key": 12345}'
+    '{"my_key": -1}'
+    '{"my_key": -123}'
+
+It my have min:max value limit using "int:min:max"
+
+::
+
+    '{"my_key": "int:-3:3"}'
+
+Will match any of those:
+::
+
+    '{"my_key": 0}'
+    '{"my_key": -1}'
+    '{"my_key": -3}'
+    '{"my_key": 1}'
+    '{"my_key": 3}'
+
+But not match those:
+::
+
+    '{"my_key": -4}'
+    '{"my_key": 4}'
+    '{"my_key": 12345}'
+
+
+float
+"""""
+
+Same as int but for float values
+::
+
+    '{"my_key": "float"}'
+
+Will match any of those:
+::
+
+    '{"my_key": 0.0}'
+    '{"my_key": 1.1}'
+    '{"my_key": 123.45}'
+    '{"my_key": -1.1}'
+    '{"my_key": -12.3}'
+
+It my have min:max value limit using "float:min:max"
+
+::
+
+    '{"my_key": "float:-3.1:3.5"}'
+
+Will match any of those:
+::
+
+    '{"my_key": 0.0}'
+    '{"my_key": -1.2}'
+    '{"my_key": -3.1}'
+    '{"my_key": 1.0}'
+    '{"my_key": 3.5}'
+
+But not match those:
+::
+
+    '{"my_key": -4.0}'
+    '{"my_key": 4.0}'
+    '{"my_key": 123.45}'
+    '{"my_key": 2}'
+
+
+url
+"""
+
+Will match only if that given JSON data is a string that contains a valid URL.
+
+::
+
+    '{"my_key": "url"}'
+
+Will match any of those:
+::
+
+    '{"my_key": "http://example.com"}'
+    '{"my_key": "https://example.com"}'
+    '{"my_key": "ftp://example.com"}'
+    '{"my_key": "ftps://example.com"}'
+
+Validation is made using the folowing python regular expression code
+::
+
+    regex = re.compile(r'^(?:http|ftp)s?://'  # HTTP, HTTPS, FTP, FTPS
+                       # Dominio
+                       r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'
+                       # Localhost
+                       r'localhost|'
+                       # IP
+                       r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
+                       # Porta
+                       r'(?::\d+)?'
+                       r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+    return True if regex.match(item) else False
+
+
+regex
+"""""
+
+Will match only if that given JSON data is string and match some regex string.
+
+::
+
+    '{"my_key": "regex:[regex string]"}'
+
+Example:
+::
+
+    In [1]: import json_schema
+
+    In [2]: json_schema.loads('{"my_key": "regex:^[0-9]{2}:[0-9]{2}:[0-9]{2}"}') == '{"my_key": "00:00:00"}'
+    Out[2]: True
+
+    In [3]: json_schema.loads('{"my_key": "regex:^[0-9]{2}:[0-9]{2}:[0-9]{2}"}') == '{"my_key": "00:00:0"}'
+    Out[3]: False
+
+    In [4]: json_schema.loads('{"my_key": "regex:^[0-9]{2}:[0-9]{2}:[0-9]{2}"}') == '{"my_key": "00:00:AA"}'
+    Out[4]: False
+
+
+any
+"""
+
+Will match anything but null.
+
+::
+
+    '{"my_key": "any"}'
+
+Will match any of those:
+::
+
+    '{"my_key": 10}'
+    '{"my_key": "foo"}'
+    '{"my_key": 1.5}'
+    '{"my_key": true}'
+    '{"my_key": ""}'
+
+But not
+
+::
+
+    '{"my_key": null}'
+
+null
+"""
+
+Will match only null values.
+
+::
+
+    '{"my_key": "null"}'
+
+Will match:
+::
+
+    '{"my_key": null}'
+
+But not
+::
+
+    '{"my_key": 10}'
+    '{"my_key": "foo"}'
+    '{"my_key": 1.5}'
+    '{"my_key": true}'
+    '{"my_key": ""}'
+
+
+Especial validations
+--------------------
+
+'|' - OR operator
+"""""""""""""""""
+
+Will match if any of validators match.
+::
+
+    '{"my_key": "string|int"}'
+
+Will match:
+::
+
+    '{"my_key": "foo"}'
+    '{"my_key": 123}'
+
+Example
+::
+
+    In [1]: import json_schema
+
+    In [2]: json_schema.loads('{"my_key": "int|string"}') == '{"my_key": "foo"}'
+    Out[2]: True
+
+    In [3]: json_schema.loads('{"my_key": "int|string"}') == '{"my_key": 123}'
+    Out[3]: True
+
+    In [4]: json_schema.loads('{"my_key": "int:0:10|string:3"}') == '{"my_key": "foo"}'
+    Out[4]: True
+
+    In [5]: json_schema.loads('{"my_key": "int:0:10|string:3"}') == '{"my_key": 3}'
+    Out[5]: True
+
+    In [6]: json_schema.loads('{"my_key": "int:0:10|string:2"}') == '{"my_key": "foo"}'
+    Out[6]: False
+
+    In [7]: json_schema.loads('{"my_key": "int:10|string"}') == '{"my_key": 123}'
+    Out[7]: False
+
+
+This will match everything:
+::
+
+    '{"my_key": "any|null"}'
+
+
+Arrays
+""""""
+
+Arrays are ordered so your schema order matters as also its size.
+::
+
+    '{"my_key": ["string", "string", "int"]}'
+
+Will match:
+::
+
+    '{"my_key": ["foo", "bar", 123]}'
+
+But not
+::
+
+    '{"my_key": ["foo", 123, "bar"]}'
+    '{"my_key": ["foo", "bar", 123, 123]}'
+
+If you dont know the size of your array you may user a special 2 item arrays as follows
+::
+
+    '{"my_key": ["string", "..."]}'
+
+That will match:
+::
+
+    '{"my_key": ["foo"]}'
+    '{"my_key": ["foo", "bar"]}'
+    '{"my_key": ["foo", "bar", "Hello World"]}'
+    '{"my_key": ["foo", "bar", "Hello World", "etc"]}'
+
+Or even:
+::
+
+    '{"my_key": ["string|int", "..."]}'
+
+That will match:
+::
+
+    '{"my_key": ["foo"]}'
+    '{"my_key": [123]}'
+    '{"my_key": ["foo", "bar"]}'
+    '{"my_key": ["foo", 123, "Hello World"]}'
+    '{"my_key": [123, "bar", "Hello World", 0]}'
+
+
+Hashs (dicts)
+"""""""""""""
+
+Hashs are not ordered so your schema order does not matters but its keys does.
+::
+
+    '{"my_key": {"internal_key_1": "string", "internal_key_2": "int"}'
+
+Will match:
+::
+
+    '{"my_key": {"internal_key_1": "foo", "internal_key_2": 123}'
+    '{"my_key": {"internal_key_2": 123, "internal_key_2": "foo"}'
+
+But not
+::
+
+    '{"my_key": {"internal_key_1": 123, "internal_key_2": "foo"}'
+    '{"my_key": {"internal_key_1": "foo", "internal_key_3": 123}'
+    '{"my_key": {"internal_key_1": "foo", "internal_key_2": 123, "fizz": "buzz"}'
+
+
+Recursivity
+"""""""""""
+
+All validations are recursive so they will check into arrays, hashs, array of arrays, etc.
+::
+
+    '[{"my_key": ["string|int", "..."]}, {"my_key": "string"}, "int", ["int|string", "string"]'
+
+Will match:
+::
+
+    '[{"my_key": [1, "foo", "bar", 100]}, {"my_key": "foo"}, 12345, [123, "foo"]'
+
+
