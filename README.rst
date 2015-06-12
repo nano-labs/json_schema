@@ -48,7 +48,7 @@ Usage Exemple
 
 
 Validators
-==========
+----------
 
 string
 """"""
