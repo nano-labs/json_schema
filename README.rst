@@ -107,7 +107,7 @@ Check and highlights any errors found.
     }
 
 
-Usage Exemple
+Usage Example
 -------------
 
 ::
@@ -272,10 +272,10 @@ Will match only if that given JSON data is a string that contains a valid URL.
 Will match any of those:
 ::
 
-    '{"my_key": "http://exemple.com"}'
-    '{"my_key": "https://exemple.com"}'
-    '{"my_key": "ftp://exemple.com"}'
-    '{"my_key": "ftps://exemple.com"}'
+    '{"my_key": "http://example.com"}'
+    '{"my_key": "https://example.com"}'
+    '{"my_key": "ftp://example.com"}'
+    '{"my_key": "ftps://example.com"}'
 
 Validation is made using the folowing python regular expression code
 ::
