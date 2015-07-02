@@ -334,7 +334,7 @@ Example:
 
 
 python
-""""""python
+""""""
 
 Will match only if that given python code return True.
 The value in JSON will be used as 'value' variable.
