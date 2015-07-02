@@ -25,12 +25,15 @@ In [7]: js == um_json
 Out[7]: True
 """
 
-import json
+try:
+    import simplejson as json
+except:
+    import json
 import re
 from pprint import pprint
 from validators import (StringValidator, IntValidator, FloatValidator,
                         UrlValidator, BooleanValidator, RegexValidator,
-                        AnyValidator, NullValidator)
+                        AnyValidator, NullValidator, PythonValidator)
 
 
 def loads(schema):
@@ -38,7 +41,7 @@ def loads(schema):
     return JsonSchema(schema)
 
 
-def dumps(j):
+def dumps(j, *args, **kwargs):
     u"""Recebe um json e retorna um schema."""
     def merge_schema_tree(a, b):
         if a == b:
@@ -83,6 +86,7 @@ def dumps(j):
         elif isinstance(a, str) or isinstance(a, unicode):
             return a.startswith("any") or b.startswith("any") or a == b
 
+
     def montador(valor):
         u"""Função recursiva para montar o schema."""
         if isinstance(valor, dict):
@@ -104,7 +108,7 @@ def dumps(j):
                     retorno = [final, "..."]
             return retorno or ["any|null", "..."]
         elif isinstance(valor, str) or isinstance(valor, unicode):
-            return "string"
+            return "str"
         elif isinstance(valor, bool):
             return "bool"
         elif isinstance(valor, int):
@@ -117,7 +121,7 @@ def dumps(j):
             raise Exception(u"O json nao parece ser valido")
 
     data = json.loads(j)
-    return json.dumps(montador(data))
+    return json.dumps(montador(data), *args, **kwargs)
 
 
 def match(j, schema):
@@ -132,7 +136,7 @@ class JsonSchema(object):
 
     validators = (StringValidator, IntValidator, FloatValidator,
                   UrlValidator, BooleanValidator, RegexValidator,
-                  AnyValidator, NullValidator)
+                  AnyValidator, NullValidator, PythonValidator)
 
     def __init__(self, schema):
         u"""Ainda não sei."""
@@ -140,6 +144,14 @@ class JsonSchema(object):
         self.schema_dict = json.loads(schema)
         if not JsonSchema.validar_schema(self.schema_dict):
             raise Exception(u"O schema nao parece ser valido")
+
+    def __unicode__(self):
+        """Unicode."""
+        return u"JSON Schema Object: %s" % self.schema
+
+    def __str__(self):
+        """Unicode."""
+        return str(self.__unicode__().encode("utf-8"))
 
     def __eq__(self, j):
         u"""Compara um json com este JsonSchema."""
@@ -161,7 +173,7 @@ class JsonSchema(object):
         t = json.dumps(e, indent=4)
         t = t.replace("\\u001b[91m", "\033[91m").replace("\u001b[92m",
                                                          "\033[92m")
-        print "\033[92m%s" % t
+        print "\033[92m%s\033[0m" % t
 
     def loads(self, schema):
         u"""Este quem de fato carrega o schema."""

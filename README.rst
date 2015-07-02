@@ -30,7 +30,7 @@ Load schema function. Receive a schema and return and JsonSchema object instance
 
     In [1]: import json_schema
 
-    In [2]: my_schema = '{"my_key": "int:0:10|string"}'
+    In [2]: my_schema = '{"my_key": "int:0:10|str"}'
 
     In [3]: my_schema_object = json_schema.loads(my_schema)
 
@@ -49,7 +49,7 @@ Dump schema function. Receive a JSON and return an automaticaly created schema. 
     In [3]: my_automatic_schema = json_schema.dumps(my_json)
 
     In [4]: my_automatic_schema
-    Out[4]: '{"ex-parrot": "bool", "parrot": ["string", "..."], "volts": "int"}'
+    Out[4]: '{"ex-parrot": "bool", "parrot": ["str", "..."], "volts": "int"}'
 
 
 json_schema.match()
@@ -61,7 +61,7 @@ Check if a given JSON matches a given schema.
 
     In [2]: my_json = '{"parrot": ["is no more", "It has ceased to be"], "ex-parrot": true, "volts": 2000}'
 
-    In [3]: my_schema = '{"ex-parrot": "bool", "parrot": ["string", "..."], "volts": "int"}'
+    In [3]: my_schema = '{"ex-parrot": "bool", "parrot": ["str", "..."], "volts": "int"}'
 
     In [4]: json_schema.match(my_json, my_schema)
     Out[4]: True
@@ -78,7 +78,7 @@ Check and highlights any errors found.
 
     In [1]: import json_schema
 
-    In [2]: my_schema = '{"ex-parrot": "bool", "parrot": ["string", "..."], "volts": "int"}'
+    In [2]: my_schema = '{"ex-parrot": "bool", "parrot": ["str", "..."], "volts": "int"}'
 
     In [3]: JS = json_schema.loads(my_schema)
 
@@ -123,7 +123,7 @@ Usage Example
     In [3]: esquema = json_schema.dumps(um_json)
 
     In [4]: print esquema
-    {"chave_list": ["int", "..."], "chave_dict": {"chave": "string"}, "chave_int": "int", "chave_float": "float", "chave_string": "string"}
+    {"chave_list": ["int", "..."], "chave_dict": {"chave": "str"}, "chave_int": "int", "chave_float": "float", "chave_string": "str"}
 
     In [5]: js = json_schema.loads(esquema)
 
@@ -144,7 +144,7 @@ Will match only if that given JSON data is string.
 
 ::
 
-    '{"my_key": "string"}'
+    '{"my_key": "str"}'
 
 Will match any of those:
 ::
@@ -155,11 +155,11 @@ Will match any of those:
     '{"my_key": "123"}'
     '{"my_key": "3.567"}'
 
-It my have max length limit using "string:max_len"
+It my have max length limit using "str:max_len"
 
 ::
 
-    '{"my_key": "string:3"}'
+    '{"my_key": "str:3"}'
 
 Will match any of those:
 ::
@@ -333,6 +333,34 @@ Example:
     Out[4]: False
 
 
+python
+""""""python
+
+Will match only if that given python code return True.
+The value in JSON will be used as 'value' variable.
+
+::
+
+    '{"my_key": "python:[python code]"}'
+
+Example:
+::
+
+    In [1]: import json_schema
+
+    In [2]: json_schema.loads('{"my_key": "python:value.upper() == value"}') == '{"my_key": "FOOBAR"}'
+    Out[2]: True
+
+    In [3]: json_schema.loads('{"my_key": "python:value.upper() == value"}') == '{"my_key": "FooBar"}'
+    Out[3]: False
+
+    In [4]: json_schema.loads('{"my_key": "python:value%2 == 2"}') == '{"my_key": 10}'
+    Out[4]: True
+
+    In [5]: json_schema.loads('{"my_key": "python:value%2 == 2"}') == '{"my_key": 11}'
+    Out[5]: False
+
+
 any
 """
 
@@ -390,7 +418,7 @@ Especial validations
 Will match if any of validators match.
 ::
 
-    '{"my_key": "string|int"}'
+    '{"my_key": "str|int"}'
 
 Will match:
 ::
@@ -403,22 +431,22 @@ Example
 
     In [1]: import json_schema
 
-    In [2]: json_schema.loads('{"my_key": "int|string"}') == '{"my_key": "foo"}'
+    In [2]: json_schema.loads('{"my_key": "int|str"}') == '{"my_key": "foo"}'
     Out[2]: True
 
-    In [3]: json_schema.loads('{"my_key": "int|string"}') == '{"my_key": 123}'
+    In [3]: json_schema.loads('{"my_key": "int|str"}') == '{"my_key": 123}'
     Out[3]: True
 
-    In [4]: json_schema.loads('{"my_key": "int:0:10|string:3"}') == '{"my_key": "foo"}'
+    In [4]: json_schema.loads('{"my_key": "int:0:10|str:3"}') == '{"my_key": "foo"}'
     Out[4]: True
 
-    In [5]: json_schema.loads('{"my_key": "int:0:10|string:3"}') == '{"my_key": 3}'
+    In [5]: json_schema.loads('{"my_key": "int:0:10|str:3"}') == '{"my_key": 3}'
     Out[5]: True
 
-    In [6]: json_schema.loads('{"my_key": "int:0:10|string:2"}') == '{"my_key": "foo"}'
+    In [6]: json_schema.loads('{"my_key": "int:0:10|str:2"}') == '{"my_key": "foo"}'
     Out[6]: False
 
-    In [7]: json_schema.loads('{"my_key": "int:10|string"}') == '{"my_key": 123}'
+    In [7]: json_schema.loads('{"my_key": "int:10|str"}') == '{"my_key": 123}'
     Out[7]: False
 
 
@@ -434,7 +462,7 @@ Arrays
 Arrays are ordered so your schema order matters as also its size.
 ::
 
-    '{"my_key": ["string", "string", "int"]}'
+    '{"my_key": ["str", "str", "int"]}'
 
 Will match:
 ::
@@ -450,7 +478,7 @@ But not
 If you dont know the size of your array you may user a special 2 item arrays as follows
 ::
 
-    '{"my_key": ["string", "..."]}'
+    '{"my_key": ["str", "..."]}'
 
 That will match:
 ::
@@ -463,7 +491,7 @@ That will match:
 Or even:
 ::
 
-    '{"my_key": ["string|int", "..."]}'
+    '{"my_key": ["str|int", "..."]}'
 
 That will match:
 ::
@@ -481,7 +509,7 @@ Hashs (dicts)
 Hashs are not ordered so your schema order does not matters but its keys does.
 ::
 
-    '{"my_key": {"internal_key_1": "string", "internal_key_2": "int"}'
+    '{"my_key": {"internal_key_1": "str", "internal_key_2": "int"}'
 
 Will match:
 ::
@@ -503,7 +531,7 @@ Recursivity
 All validations are recursive so they will check into arrays, hashs, array of arrays, etc.
 ::
 
-    '[{"my_key": ["string|int", "..."]}, {"my_key": "string"}, "int", ["int|string", "string"]'
+    '[{"my_key": ["str|int", "..."]}, {"my_key": "str"}, "int", ["int|str", "str"]'
 
 Will match:
 ::

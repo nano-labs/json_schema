@@ -13,24 +13,24 @@ class StringValidator:
         ultrapassa max lenght
 
     Formatos possíveis:
-        "string"
-        "string:max lenght
+        "str"
+        "str:max lenght
 
     Ex:
-        "string:10"
+        "str:10"
     """
 
     @classmethod
     def schema_lookout(cls, schema):
         """Checa se dado schema deve ser validado por este Validator."""
-        return schema.startswith("string")
+        return schema.startswith("str")
 
     @classmethod
     def validator(cls, item, item_schema):
         """Validador de fato da string."""
         if isinstance(item, str) or isinstance(item, unicode):
-            if item_schema.startswith("string:"):
-                tamanho = int(item_schema.replace("string:", ""))
+            if item_schema.startswith("str:"):
+                tamanho = int(item_schema.replace("str:", ""))
                 if len(item) > tamanho:
                     return False
                 return True
@@ -253,3 +253,35 @@ class NullValidator:
     def validator(cls, item, item_schema):
         """Como pode ser qualquer coisa sempre retorna True."""
         return item is None
+
+
+class PythonValidator:
+
+    u"""
+    Classe apenas para agrupar os metodos do validador.
+
+    Validação:
+        Checa se o valor passa numa expressão python definida
+
+    Formatos possíveis:
+        "python:codigo_python"
+
+    Ex:
+        "python:value.upper() == value"
+    """
+
+    @classmethod
+    def schema_lookout(cls, schema):
+        """Checa se dado schema deve ser validado por este Validator."""
+        return schema.startswith("python:")
+
+    @classmethod
+    def validator(cls, item, item_schema):
+        """Como pode ser qualquer coisa sempre retorna True."""
+        src = item_schema.replace("python:", "")
+        src = """def temporary_function(value):\n    return %s""" % src
+        try:
+            exec(src)
+            return temporary_function(item)
+        except:
+            return False
