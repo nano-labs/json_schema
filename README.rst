@@ -177,7 +177,7 @@ But not match those:
     '{"my_key": "abcde"}'
     '{"my_key": "1234"}'
 
-Or direct string match useng "str:string_to_match"
+Or direct string match using "str:string_to_match"
 
 ::
 
@@ -432,7 +432,7 @@ But not
     '{"my_key": null}'
 
 null
-"""
+""""
 
 Will match only null values.
 
