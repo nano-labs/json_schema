@@ -33,7 +33,8 @@ import re
 from pprint import pprint
 from validators import (StringValidator, IntValidator, FloatValidator,
                         UrlValidator, BooleanValidator, RegexValidator,
-                        AnyValidator, NullValidator, PythonValidator)
+                        AnyValidator, NullValidator, PythonValidator,
+                        DatetimeValidator)
 
 
 def loads(schema):
@@ -136,7 +137,8 @@ class JsonSchema(object):
 
     validators = (StringValidator, IntValidator, FloatValidator,
                   UrlValidator, BooleanValidator, RegexValidator,
-                  AnyValidator, NullValidator, PythonValidator)
+                  AnyValidator, NullValidator, PythonValidator,
+                  DatetimeValidator)
 
     def __init__(self, schema):
         u"""Ainda não sei."""
@@ -144,6 +146,11 @@ class JsonSchema(object):
         self.schema_dict = json.loads(schema)
         if not JsonSchema.validar_schema(self.schema_dict):
             raise Exception(u"O schema nao parece ser valido")
+
+    @classmethod
+    def __red_then_gren__(self, string):
+        """Retorna a string em vermelho e com terminador verde."""
+        return u"\033[91m%s\033[92m" % string
 
     def __unicode__(self):
         """Unicode."""
@@ -165,6 +172,10 @@ class JsonSchema(object):
         estrutura = json.loads(j)
         e = JsonSchema.comparar(estrutura, self.schema_dict)
         return check_response(e)
+
+    def __ne__(self, j):
+        """Not Equal."""
+        return not self.__eq__(j)
 
     def full_check(self, j):
         u"""Checa e printa com highlight nos erros."""
@@ -205,6 +216,22 @@ class JsonSchema(object):
         u"""Faz a comparação recursiva."""
         # Se for um dicionário
         if isinstance(item_schema, dict):
+            if not isinstance(item, dict):
+                msg = u"'%s' shloud be a key-value structure" % item
+                return cls.__red_then_gren__(msg)
+            item_schema_keys_set = set(item_schema.keys())
+            item_keys_set = set(item.keys())
+            if item_schema_keys_set != item_keys_set:
+                if item_schema_keys_set.issubset(item_keys_set):
+                    msg = u"This dict should not have keys %s" % (
+                          str(list(item_keys_set - item_schema_keys_set)), )
+                elif item_keys_set.issubset(item_schema_keys_set):
+                    msg = u"This dict should have keys %s" % (
+                          str(list(item_schema_keys_set - item_keys_set)), )
+                else:
+                    msg = u"This dict should have keys %s but have %s" % (
+                          str(item_schema.keys()), str(item.keys()))
+                return cls.__red_then_gren__(msg)
             return {chave: cls.comparar(item[chave], valor_schema)
                     for chave, valor_schema in item_schema.items()}
         # Se for uma lista
@@ -218,7 +245,9 @@ class JsonSchema(object):
                 return [cls.comparar(item_lista, item_schema_repetido) for item_lista in item]
             # Se for uma lista de tamanho fixo
             if not len(item_schema) == len(item):
-                return False
+                msg = u"This list have %s items but should have %s" % (
+                      len(item), len(item_schema))
+                return cls.__red_then_gren__(msg)
             return [cls.comparar(item_lista, item_schema_list)
                     for item_lista, item_schema_list in zip(item, item_schema)]
         # Se for uma string ou unicode
@@ -236,7 +265,8 @@ class JsonSchema(object):
                             break
             all_clear = any(all_results)
             if not all_clear:
-                return u"\033[91m'%s' should match '%s'\033[92m" % (item, item_schema)
+                return cls.__red_then_gren__(u"'%s' should match '%s'" % (
+                                             item, item_schema))
             return all_clear
 
 
