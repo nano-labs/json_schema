@@ -454,6 +454,49 @@ But not
     '{"my_key": true}'
     '{"my_key": ""}'
 
+empty
+"""""
+
+Will match empty structures.
+
+Supported:
+::
+
+    '{"my_key": "empty:list"}'
+    '{"my_key": "empty:dict"}'
+    '{"my_key": "empty:hash"}'
+    '{"my_key": "empty:object"}'
+
+Types 'hash', 'dict' and 'object' are actually same
+
+::
+
+    '{"my_key": "empty:list"}'
+
+
+Will match:
+::
+
+    '{"my_key": []}'
+
+And
+::
+
+    '{"my_key": "empty:object"}'
+
+
+Will match:
+::
+
+    '{"my_key": {}}'
+
+
+But not
+
+::
+
+    '{"my_key": null}'
+
 
 Especial validations
 --------------------

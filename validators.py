@@ -320,3 +320,33 @@ class DatetimeValidator:
             return True
         except:
             return False
+
+
+class EmptyValidator:
+
+    u"""
+    Classe apenas para agrupar os metodos do validador.
+
+    Validação:
+        Checa se o valor está vazio
+
+    Formatos possíveis:
+        "empty:list"
+        "empty:dict"
+        "empty:hash"
+        "empty:object"
+
+    dict, hash e object são sinonimos.
+    """
+
+    @classmethod
+    def schema_lookout(cls, schema):
+        """Checa se dado schema deve ser validado por este Validator."""
+        return schema.startswith("empty:")
+
+    @classmethod
+    def validator(cls, item, item_schema):
+        u"""Testa se o item é de dado tipo e está vazio."""
+        tipo = item_schema.replace("empty:", "")
+        tipos = {"dict": dict, "hash": dict, "object": dict, "list": list}
+        return isinstance(item, tipos[tipo]) and len(item) == 0

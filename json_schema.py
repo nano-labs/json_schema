@@ -34,7 +34,7 @@ from pprint import pprint
 from validators import (StringValidator, IntValidator, FloatValidator,
                         UrlValidator, BooleanValidator, RegexValidator,
                         AnyValidator, NullValidator, PythonValidator,
-                        DatetimeValidator)
+                        DatetimeValidator, EmptyValidator)
 
 
 def loads(schema):
@@ -87,7 +87,6 @@ def dumps(j, *args, **kwargs):
         elif isinstance(a, str) or isinstance(a, unicode):
             return a.startswith("any") or b.startswith("any") or a == b
 
-
     def montador(valor):
         u"""Função recursiva para montar o schema."""
         if isinstance(valor, dict):
@@ -138,7 +137,7 @@ class JsonSchema(object):
     validators = (StringValidator, IntValidator, FloatValidator,
                   UrlValidator, BooleanValidator, RegexValidator,
                   AnyValidator, NullValidator, PythonValidator,
-                  DatetimeValidator)
+                  DatetimeValidator, EmptyValidator)
 
     def __init__(self, schema):
         u"""Ainda não sei."""
