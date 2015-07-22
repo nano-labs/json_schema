@@ -2,6 +2,7 @@
 u"""Validators padrão a serem usados pelo json_schema."""
 
 import re
+from datetime import datetime
 
 
 class StringValidator:
@@ -30,10 +31,13 @@ class StringValidator:
         """Validador de fato da string."""
         if isinstance(item, str) or isinstance(item, unicode):
             if item_schema.startswith("str:"):
-                tamanho = int(item_schema.replace("str:", ""))
-                if len(item) > tamanho:
-                    return False
-                return True
+                try:
+                    tamanho = int(item_schema.replace("str:", ""))
+                    if len(item) > tamanho:
+                        return False
+                    return True
+                except ValueError:
+                    return item == item_schema.replace("str:", "")
             return True
         return False
 
@@ -277,11 +281,42 @@ class PythonValidator:
 
     @classmethod
     def validator(cls, item, item_schema):
-        """Como pode ser qualquer coisa sempre retorna True."""
+        u"""Testa o código python."""
         src = item_schema.replace("python:", "")
         src = """def temporary_function(value):\n    return %s""" % src
         try:
             exec(src)
             return temporary_function(item)
+        except:
+            return False
+
+
+class DatetimeValidator:
+
+    u"""
+    Classe apenas para agrupar os metodos do validador.
+
+    Validação:
+        Checa se o valor confere num datetime.strptime
+
+    Formatos possíveis:
+        "datetime:datetime string formater"
+
+    Ex:
+        "datetime:%Y-%m-%d"
+    """
+
+    @classmethod
+    def schema_lookout(cls, schema):
+        """Checa se dado schema deve ser validado por este Validator."""
+        return schema.startswith("datetime:")
+
+    @classmethod
+    def validator(cls, item, item_schema):
+        """Testa o datetime.strptime()."""
+        string_formater = item_schema.replace("datetime:", "")
+        try:
+            datetime.strptime(item, string_formater)
+            return True
         except:
             return False
