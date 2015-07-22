@@ -177,6 +177,23 @@ But not match those:
     '{"my_key": "abcde"}'
     '{"my_key": "1234"}'
 
+Or direct string match useng "str:string_to_match"
+
+::
+
+    '{"my_key": "str:Foo Bar"}'
+
+Will match only:
+::
+
+    '{"my_key": "Foo Bar"}'
+
+And not match those:
+::
+
+    '{"my_key": "foo bar"}'
+    '{"my_key": "Foo bar"}'
+    '{"my_key": "anything else"}'
 
 int
 """
@@ -359,6 +376,35 @@ Example:
 
     In [5]: json_schema.loads('{"my_key": "python:value%2 == 2"}') == '{"my_key": 11}'
     Out[5]: False
+
+
+datetime
+""""""""
+
+Will match only if that given value match with datetime string formatter
+https://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior
+
+::
+
+    '{"my_key": "datetime:format string"}'
+
+Example:
+::
+
+    In [1]: import json_schema
+
+    In [2]: json_schema.loads('{"my_key": "datetime:%Y-%m-%d"}') == '{"my_key": "2015-07-07"}'
+    Out[2]: True
+
+    In [3]: json_schema.loads('{"my_key": "datetime:%Y-%m-%d"}') == '{"my_key": "2015-17-07"}'
+    Out[3]: False
+
+    In [4]: json_schema.loads('{"my_key": "datetime:%d/%m/%Y %H:%M:%S"}') == '{"my_key": "13/04/1984 11:22:33"}'
+    Out[4]: True
+
+    In [5]: json_schema.loads('{"my_key": "datetime:%d/%m/%Y %H:%M:%S"}') == '{"my_key": "04/13/1984 11:22:33"}'
+    Out[5]: False
+
 
 
 any
