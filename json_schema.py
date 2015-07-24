@@ -203,9 +203,13 @@ class JsonSchema(object):
                     return False
             return True
         elif isinstance(schema, str) or isinstance(schema, unicode):
-            if any([v.schema_lookout(schema)
-                    for v in cls.validators] + [schema == "..."]):
-                return True
+            items_schema = [schema]
+            if "|" in schema:
+                items_schema = schema.split("|")
+            for schema in items_schema:
+                if any([v.schema_lookout(schema)
+                        for v in cls.validators] + [schema == "..."]):
+                    return True
             return False
         else:
             return False

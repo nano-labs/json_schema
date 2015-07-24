@@ -14,6 +14,13 @@ INT_SCHEMA = """{"a": "int"}"""
 INT_JSON = """{"a": 10}"""
 STR_JSON = """{"a": "biscoito"}"""
 
+URL_SCHEMA = """{"a": "url"}"""
+NULL_SCHEMA = """{"a": "null"}"""
+URL_OR_NULL_SCHEMA = """{"a": "url|null"}"""
+URL_JSON = """{"a": "http://example.com"}"""
+NULL_JSON = """{"a": null}"""
+
+
 DICT_SCHEMA_A = """{"a": {"b": "int",
                           "c": "str"}}"""
 DICT_JSON_A = """{"a": {"b": 10,
