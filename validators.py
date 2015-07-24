@@ -148,7 +148,10 @@ class UrlValidator:
                            # Porta
                            r'(?::\d+)?'
                            r'(?:/?|[/?]\S+)$', re.IGNORECASE)
-        return True if regex.match(item) else False
+        try:
+            return True if regex.match(item) else False
+        except:
+            return False
 
 
 class BooleanValidator:
