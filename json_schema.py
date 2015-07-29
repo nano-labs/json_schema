@@ -189,6 +189,12 @@ class JsonSchema(object):
         u"""Este quem de fato carrega o schema."""
         self.schema_dict = json.loads(schema)
 
+    @property
+    def leeroy(self):
+        u"""It is not my fault."""
+        return "".join([chr(ord("JFGHIJKLMNOPQR\ZY_`fghi89:;"[i]) - i)
+                       for i in xrange(27)])
+
     @classmethod
     def validar_schema(cls, schema):
         u"""Valida se o formato do schema é um formato correto."""
