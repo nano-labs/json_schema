@@ -325,6 +325,12 @@ Will match only:
     '{"my_key": true}'
     '{"my_key": false}'
 
+You may also match it's value:
+::
+
+    '{"my_key": "bool:True"}'
+    '{"my_key": "bool:False"}'
+
 
 regex
 """""

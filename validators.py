@@ -164,6 +164,8 @@ class BooleanValidator:
 
     Formatos possíveis:
         "bool"
+        "bool:True"
+        "bool:False"
 
     Ex:
         "bool"
@@ -172,11 +174,14 @@ class BooleanValidator:
     @classmethod
     def schema_lookout(cls, schema):
         """Checa se dado schema deve ser validado por este Validator."""
-        return schema == "bool"
+        return schema.startswith("bool")
 
     @classmethod
     def validator(cls, item, item_schema):
         """Validador de fato do bool."""
+        if ":" in item_schema:
+            value = item_schema.split(":")[1] == "True"
+            return item == value
         return isinstance(item, bool)
 
 
