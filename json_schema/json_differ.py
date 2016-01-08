@@ -40,4 +40,7 @@ def dumps(j, *args, **kwargs):
 def diff_jsons(a, b):
     u"""Mostra a diferença entre 2 jsons."""
     schema_a = JsonSchema(dumps(a))
-    return schema_a.full_check(b)
+    if schema_a == b:
+        return True
+    schema_a.full_check(b)
+    return False
