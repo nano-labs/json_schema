@@ -1,7 +1,7 @@
-JSON Schema
-===========
+JSON Differ and Schema Matcher
+==============================
 
-Use this Lib to create a structure schema of a given JSON and also to check if a given JSON matches a given schema.
+Use this Lib to create a structure schema of a given JSON and also to check if a given JSON matches a given schema or simply to diff 2 JSONs.
 
 
 Why Should I Use This?
@@ -12,23 +12,51 @@ I made this for use when validating a JSON REST API using Behave. I wanted to be
 You may use it for whatever you want :)
 
 
-Features
---------
+Differ Features
+---------------
+
+- Diff 2 JSONs
+
+
+Schema Features
+---------------
 
 - Export schema for a given JSON
 - Validate a given schema
 - Check if a given JSON matches a given schema
 - Highlight any unmatched data between JSON and schema
 
-Usage
------
+
+
+Differ Usage
+------------
+
+diff_jsons()
+""""""""""""
+Show differences between 2 JSONs
+::
+
+    In [1]: from json_schema.json_differ import diff_jsons
+
+    In [2]: diff_jsons('{"a": "1"}', '{"a": 2}')
+    {
+        "a": "'2' should match 'str:1'"
+    }
+    Out[2]: False
+    
+    In [3]: diff_jsons('{"a": "1"}', '{"a": "1"}')
+    Out[3]: True
+
+
+Schema Usage
+------------
 
 json_schema.loads()
 """""""""""""""""""
 Load schema function. Receive a schema and return and JsonSchema object instance.
 ::
 
-    In [1]: import json_schema
+    In [1]: from json_schema import json_schema
 
     In [2]: my_schema = '{"my_key": "int:0:10|str"}'
 
@@ -42,7 +70,7 @@ json_schema.dumps()
 Dump schema function. Receive a JSON and return an automaticaly created schema. Its very userful when working with some large or complex JSON. Be aware that you may have to adapt its returned schema to work with your JSON variations. For example, if your JSON have some optional value that, this time, is null the schema created will expect that that value is AWAYS null.
 :: 
 
-    In [1]: import json_schema
+    In [1]: from json_schema import json_schema
 
     In [2]: my_json = '{"parrot": ["is no more", "It has ceased to be"], "ex-parrot": true, "volts": 2000}'
 
@@ -57,7 +85,7 @@ json_schema.match()
 Check if a given JSON matches a given schema.
 ::
 
-    In [1]: import json_schema
+    In [1]: from json_schema import json_schema
 
     In [2]: my_json = '{"parrot": ["is no more", "It has ceased to be"], "ex-parrot": true, "volts": 2000}'
 
@@ -76,7 +104,7 @@ JsonSchema.full_check()
 Check and highlights any errors found.
 ::
 
-    In [1]: import json_schema
+    In [1]: from json_schema import json_schema
 
     In [2]: my_schema = '{"ex-parrot": "bool", "parrot": ["str", "..."], "volts": "int"}'
 
@@ -112,7 +140,7 @@ Usage Example
 
 ::
 
-    In [1]: import json_schema
+    In [1]: from json_schema import json_schema
 
     In [2]: um_json = '''{"chave_list": [1, 2],
                           "chave_dict": {"chave": "valor"},
@@ -344,7 +372,7 @@ Will match only if that given JSON data is string and match some regex string.
 Example:
 ::
 
-    In [1]: import json_schema
+    In [1]: from json_schema import json_schema
 
     In [2]: json_schema.loads('{"my_key": "regex:^[0-9]{2}:[0-9]{2}:[0-9]{2}"}') == '{"my_key": "00:00:00"}'
     Out[2]: True
@@ -369,7 +397,7 @@ The value in JSON will be used as 'value' variable.
 Example:
 ::
 
-    In [1]: import json_schema
+    In [1]: from json_schema import json_schema
 
     In [2]: json_schema.loads('{"my_key": "python:value.upper() == value"}') == '{"my_key": "FOOBAR"}'
     Out[2]: True
@@ -397,7 +425,7 @@ https://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior
 Example:
 ::
 
-    In [1]: import json_schema
+    In [1]: from json_schema import json_schema
 
     In [2]: json_schema.loads('{"my_key": "datetime:%Y-%m-%d"}') == '{"my_key": "2015-07-07"}'
     Out[2]: True
@@ -524,7 +552,7 @@ Will match:
 Example
 ::
 
-    In [1]: import json_schema
+    In [1]: from json_schema import json_schema
 
     In [2]: json_schema.loads('{"my_key": "int|str"}') == '{"my_key": "foo"}'
     Out[2]: True
