@@ -24,6 +24,7 @@ setup(
 
     # The project's main homepage.
     url='https://github.com/nano-labs/json_schema',
+    download_url=''
 
     # Author details
     author='Fabio Pachelli Pacheco',
