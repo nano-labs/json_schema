@@ -6,7 +6,6 @@ try:
 except:
     import json
 import behave
-from ensure import ensure
 import logging
 import json_schema
 
@@ -93,6 +92,3 @@ def json_should_not_match_schema(context, s, j):
     logging.info(schema)
     logging.info(json_string)
     assert not schema == json_string
-
-
-

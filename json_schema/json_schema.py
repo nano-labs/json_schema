@@ -29,8 +29,6 @@ try:
     import simplejson as json
 except:
     import json
-import re
-from pprint import pprint
 from validators import (StringValidator, IntValidator, FloatValidator,
                         UrlValidator, BooleanValidator, RegexValidator,
                         AnyValidator, NullValidator, PythonValidator,
