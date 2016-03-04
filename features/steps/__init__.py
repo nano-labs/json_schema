@@ -6,9 +6,8 @@ try:
 except:
     import json
 import behave
-from ensure import ensure
 import logging
-import json_schema
+from json_schema import json_schema
 
 INT_SCHEMA = """{"a": "int"}"""
 INT_JSON = """{"a": 10}"""
@@ -30,6 +29,10 @@ DICT_JSON_B = """{"a": {"b": 10,
                         "d": "foo"}}"""
 DICT_JSON_C = """{"a": {"b": 10,
                         "d": "biscoito"}}"""
+
+PYTHON_SCHEMA = """{"a": "python:value.upper() == value"}"""
+PYTHON_JSON = """{"a": "HELLO WORLD"}"""
+PYTHON_FAIL_JSON = """{"a": "Hello World"}"""
 
 
 @behave.given('from {libfile} import {value} as {key}')
@@ -54,9 +57,30 @@ def i_have_schema(context, schema):
         s = json_schema.loads(getattr(context, schema))
     except:
         logging.info("### Erro ao carregar o schema ###")
-        logging.info(repr(schema))
+        logging.info(repr(getattr(context, schema)))
         raise
     context.__setattr__("test_schema", s)
+
+
+@behave.given('I have unsafe schema {schema}')
+def i_have_unsafe_schema(context, schema):
+    """Carrega o schema {schema} con allow_unsafe."""
+    try:
+        s = json_schema.loads(getattr(context, schema), allow_unsafe=True)
+    except:
+        logging.info("### Erro ao carregar o schema ###")
+        logging.info(repr(getattr(context, schema)))
+        raise
+    context.__setattr__("test_schema", s)
+
+
+@behave.then('I can\'t have schema {schema}')
+def i_cant_have_schema(context, schema):
+    """Falha ao carregar o schema."""
+    try:
+        s = json_schema.loads(getattr(context, schema))
+    except Exception, e:
+        assert str(e) == "O schema nao parece ser valido"
 
 
 @behave.given('I have JSON {jdata}')
@@ -73,7 +97,7 @@ def i_have_schema(context, jdata):
 @behave.then('schema {s} should match JSON {j}')
 def json_should_match_schema(context, s, j):
     """Carrega o JSON {jdata} no atributo 'test_json' no context."""
-    schema = json_schema.loads(getattr(context, s))
+    schema = json_schema.loads(getattr(context, s), allow_unsafe=True)
     json_string = getattr(context, j)
     try:
         if not schema == json_string:
@@ -88,11 +112,8 @@ def json_should_match_schema(context, s, j):
 @behave.then('schema {s} should not match JSON {j}')
 def json_should_not_match_schema(context, s, j):
     """Carrega o JSON {jdata} no atributo 'test_json' no context."""
-    schema = json_schema.loads(getattr(context, s))
+    schema = json_schema.loads(getattr(context, s), allow_unsafe=True)
     json_string = getattr(context, j)
     logging.info(schema)
     logging.info(json_string)
     assert not schema == json_string
-
-
-

@@ -37,7 +37,7 @@ def dumps(j, *args, **kwargs):
     return json.dumps(montador(data), *args, **kwargs)
 
 
-def diff_jsons(a, b):
+def diff_jsons(b, a):
     u"""Mostra a diferença entre 2 jsons."""
     schema_a = JsonSchema(dumps(a))
     if schema_a == b:
