@@ -56,7 +56,8 @@ def diff(a, b):
                 "dict": "hash",
                 "list": "array",
                 "NoneType": "null",
-                "float": "float"}[type(obj).__name__]
+                "float": "float",
+                "bool": "boolean"}[type(obj).__name__]
 
     def comparador(ia, ib):
         if ia == ib:
@@ -92,7 +93,7 @@ def diff(a, b):
                     retorno += [(False, u"%s '%s' exists on right branch only" %
                                 (type_name(i), i)) for i in ib[len(ia):]]
                 return retorno
-            elif type(ia) in [str, int, float, bool]:
+            elif type(ia) in [str, int, float, bool, unicode]:
                 var_type = type_name(ia)
                 return False, u"Left %s '%s' differ from right %s '%s'" % (
                                var_type, ia, var_type, ib)
