@@ -17,14 +17,14 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 setup(
     name='json-schema-matcher',
 
-    version='0.1.6',
+    version='0.1.7',
 
     description='Use this Lib to create a structure schema of a given JSON and also to check if a given JSON matches a given schema.',
     long_description=long_description,
 
     # The project's main homepage.
     url='https://github.com/nano-labs/json_schema',
-    download_url='https://github.com/nano-labs/json_schema/archive/release/0.1.6.zip',
+    download_url='https://github.com/nano-labs/json_schema/archive/release/0.1.7.zip',
 
     # Author details
     author='Fabio Pachelli Pacheco',
