@@ -17,7 +17,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 setup(
     name='json-schema-matcher',
 
-    version='0.1.5',
+    version='0.1.6',
 
     description='Use this Lib to create a structure schema of a given JSON and also to check if a given JSON matches a given schema.',
     long_description=long_description,
