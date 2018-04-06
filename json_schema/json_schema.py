@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-u"""
+"""
 Lib para comparação, teste e checagem de jsons.
 
 Exemplo de uso:
@@ -29,24 +29,24 @@ try:
     import simplejson as json
 except:
     import json
-from validators import (StringValidator, IntValidator, FloatValidator,
+from .validators import (StringValidator, IntValidator, FloatValidator,
                         UrlValidator, BooleanValidator, RegexValidator,
                         AnyValidator, NullValidator, PythonValidator,
                         DatetimeValidator, EmptyValidator)
 
 
 def loads(schema, *args, **kwargs):
-    u"""Recebe uma string de schema e retorna um JsonSchema object."""
+    """Recebe uma string de schema e retorna um JsonSchema object."""
     return JsonSchema(schema, *args, **kwargs)
 
 
 def dumps(j, *args, **kwargs):
-    u"""Recebe um json e retorna um schema."""
+    """Recebe um json e retorna um schema."""
     def merge_schema_tree(a, b):
         if a == b:
             return a
         elif isinstance(a, dict):
-            return {c: merge_schema_tree(a[c], b[c]) for c, v in a.items()}
+            return {c: merge_schema_tree(a[c], b[c]) for c, v in list(a.items())}
         elif isinstance(a, list) or isinstance(a, tuple):
             if not len(a) == len(b):
                 if ("..." in a and b == []):
@@ -55,7 +55,7 @@ def dumps(j, *args, **kwargs):
                     return b
                 raise Exception('Not Match')
             return [merge_schema_tree(a[i], b[i]) for i in range(len(a))]
-        elif isinstance(a, str) or isinstance(a, unicode):
+        elif isinstance(a, str) or isinstance(a, str):
             if a == "any":
                 return b
             elif b == "any":
@@ -69,11 +69,11 @@ def dumps(j, *args, **kwargs):
             raise Exception('Not Match: %s - %s' % (a, b))
 
     def _match_tree(a, b):
-        u"""função recursiva para checar se 'a' e 'b' são iguais."""
+        """função recursiva para checar se 'a' e 'b' são iguais."""
         if a == b:
             return True
         elif isinstance(a, dict):
-            resultados = [_match_tree(a[c], b[c]) for c, v in a.items()]
+            resultados = [_match_tree(a[c], b[c]) for c, v in list(a.items())]
             return all(resultados)
         elif isinstance(a, list) or isinstance(a, tuple):
             if not len(a) == len(b):
@@ -82,14 +82,14 @@ def dumps(j, *args, **kwargs):
                 return False
             resultados = [_match_tree(a[i], b[i]) for i in range(len(a))]
             return all(resultados)
-        elif isinstance(a, str) or isinstance(a, unicode):
+        elif isinstance(a, str) or isinstance(a, str):
             return a.startswith("any") or b.startswith("any") or a == b
 
     def montador(valor):
-        u"""Função recursiva para montar o schema."""
+        """Função recursiva para montar o schema."""
         if isinstance(valor, dict):
             retorno = {}
-            for c, v in valor.items():
+            for c, v in list(valor.items()):
                 retorno[c] = montador(v)
             return retorno
         elif isinstance(valor, list) or isinstance(valor, tuple):
@@ -105,7 +105,7 @@ def dumps(j, *args, **kwargs):
                         final = merge_schema_tree(final, r)
                     retorno = [final, "..."]
             return retorno or ["any|null", "..."]
-        elif isinstance(valor, str) or isinstance(valor, unicode):
+        elif isinstance(valor, str) or isinstance(valor, str):
             return "str"
         elif isinstance(valor, bool):
             return "bool"
@@ -116,24 +116,24 @@ def dumps(j, *args, **kwargs):
         elif valor is None:
             return "any|null"
         else:
-            raise Exception(u"O json nao parece ser valido")
+            raise Exception("O json nao parece ser valido")
 
     data = json.loads(j)
     return json.dumps(montador(data), *args, **kwargs)
 
 
 def match(j, schema):
-    u"""Compara um json (j) com um schema (schema)."""
+    """Compara um json (j) com um schema (schema)."""
     js = JsonSchema(schema)
     return js == j
 
 
 class JsonSchema(object):
 
-    u"""Objeto usado para comparações e testes de schemas."""
+    """Objeto usado para comparações e testes de schemas."""
 
     def __init__(self, schema, allow_unsafe=False):
-        u"""
+        """
         Cria uma instância de objeto de schema.
 
         Se allow_unsafe == True permite o uso de validators com possíveis
@@ -143,11 +143,11 @@ class JsonSchema(object):
         self.allow_unsafe = allow_unsafe
         self.schema_dict = json.loads(schema)
         if not self.validar_schema(self.schema_dict):
-            raise Exception(u"O schema nao parece ser valido")
+            raise Exception("O schema nao parece ser valido")
 
     @property
     def validators(self):
-        u"""Lista dos validator disponíveis."""
+        """Lista dos validator disponíveis."""
         v = (StringValidator, IntValidator, FloatValidator, UrlValidator,
              BooleanValidator, RegexValidator, AnyValidator, NullValidator,
              DatetimeValidator, EmptyValidator)
@@ -158,21 +158,21 @@ class JsonSchema(object):
     @classmethod
     def __red_then_gren__(cls, string):
         """Retorna a string em vermelho e com terminador verde."""
-        return u"\033[91m%s\033[92m" % string
+        return "\033[91m%s\033[92m" % string
 
     def __unicode__(self):
         """Unicode."""
-        return u"JSON Schema Object: %s" % self.schema
+        return "JSON Schema Object: %s" % self.schema
 
     def __str__(self):
         """Unicode."""
         return str(self.__unicode__().encode("utf-8"))
 
     def __eq__(self, j):
-        u"""Compara um json com este JsonSchema."""
+        """Compara um json com este JsonSchema."""
         def check_response(e):
             if isinstance(e, dict):
-                return all([check_response(v) for c, v in e.items()])
+                return all([check_response(v) for c, v in list(e.items())])
             elif isinstance(e, list):
                 return all([check_response(i) for i in e])
             return e is True
@@ -186,28 +186,28 @@ class JsonSchema(object):
         return not self.__eq__(j)
 
     def full_check(self, j):
-        u"""Checa e printa com highlight nos erros."""
+        """Checa e printa com highlight nos erros."""
         estrutura = json.loads(j)
         e = self._comparar(estrutura, self.schema_dict)
         t = json.dumps(e, indent=4)
-        t = t.replace("\\u001b[91m", "\033[91m").replace("\u001b[92m",
+        t = t.replace("\\u001b[91m", "\033[91m").replace("\\u001b[92m",
                                                          "\033[92m")
-        print "\033[92m%s\033[0m" % t
+        print("\033[92m%s\033[0m" % t)
 
     def loads(self, schema):
-        u"""Este quem de fato carrega o schema."""
+        """Este quem de fato carrega o schema."""
         self.schema_dict = json.loads(schema)
 
     @property
     def leeroy(self):
-        u"""It is not my fault."""
+        """It is not my fault."""
         return "".join([chr(ord("JFGHIJKLMNOPQR\ZY_`fghi89:;"[i]) - i)
-                       for i in xrange(27)])
+                       for i in range(27)])
 
     def validar_schema(self, schema):
-        u"""Valida se o formato do schema é um formato correto."""
+        """Valida se o formato do schema é um formato correto."""
         if isinstance(schema, dict):
-            for chave, valor in schema.items():
+            for chave, valor in list(schema.items()):
                 if not self.validar_schema(valor):
                     return False
             return True
@@ -216,7 +216,7 @@ class JsonSchema(object):
                 if not self.validar_schema(item):
                     return False
             return True
-        elif isinstance(schema, str) or isinstance(schema, unicode):
+        elif isinstance(schema, str) or isinstance(schema, str):
             items_schema = [schema]
             if "|" in schema:
                 items_schema = schema.split("|")
@@ -229,28 +229,28 @@ class JsonSchema(object):
             return False
 
     def _comparar(self, item, item_schema):
-        u"""Faz a comparação recursiva."""
+        """Faz a comparação recursiva."""
         cls = self.__class__
         # Se for um dicionário
         if isinstance(item_schema, dict):
             if not isinstance(item, dict):
-                msg = u"'%s' shloud be a key-value structure" % item
+                msg = "'%s' shloud be a key-value structure" % item
                 return cls.__red_then_gren__(msg)
             item_schema_keys_set = set(item_schema.keys())
             item_keys_set = set(item.keys())
             if item_schema_keys_set != item_keys_set:
                 if item_schema_keys_set.issubset(item_keys_set):
-                    msg = u"This dict should not have keys %s" % (
+                    msg = "This dict should not have keys %s" % (
                           str(list(item_keys_set - item_schema_keys_set)), )
                 elif item_keys_set.issubset(item_schema_keys_set):
-                    msg = u"This dict should have keys %s" % (
+                    msg = "This dict should have keys %s" % (
                           str(list(item_schema_keys_set - item_keys_set)), )
                 else:
-                    msg = u"This dict should have keys %s but have %s" % (
-                          str(item_schema.keys()), str(item.keys()))
+                    msg = "This dict should have keys %s but have %s" % (
+                          str(list(item_schema.keys())), str(list(item.keys())))
                 return cls.__red_then_gren__(msg)
             return {chave: self._comparar(item[chave], valor_schema)
-                    for chave, valor_schema in item_schema.items()}
+                    for chave, valor_schema in list(item_schema.items())}
         # Se for uma lista
         elif isinstance(item_schema, list):
             # Se for uma lista vazia admite-se qualquer valor
@@ -262,13 +262,13 @@ class JsonSchema(object):
                 return [self._comparar(item_lista, item_schema_repetido) for item_lista in item]
             # Se for uma lista de tamanho fixo
             if not len(item_schema) == len(item):
-                msg = u"This list have %s items but should have %s" % (
+                msg = "This list have %s items but should have %s" % (
                       len(item), len(item_schema))
                 return cls.__red_then_gren__(msg)
             return [self._comparar(item_lista, item_schema_list)
                     for item_lista, item_schema_list in zip(item, item_schema)]
         # Se for uma string ou unicode
-        elif isinstance(item_schema, str) or isinstance(item_schema, unicode):
+        elif isinstance(item_schema, str) or isinstance(item_schema, str):
             all_results = []
             items_schema = [item_schema]
             if "|" in item_schema:
@@ -282,6 +282,6 @@ class JsonSchema(object):
                             break
             all_clear = any(all_results)
             if not all_clear:
-                return cls.__red_then_gren__(u"'%s' should match '%s'" % (
+                return cls.__red_then_gren__("'%s' should match '%s'" % (
                                              item, item_schema))
             return all_clear

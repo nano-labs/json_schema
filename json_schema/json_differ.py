@@ -3,16 +3,16 @@ try:
     import simplejson as json
 except:
     import json
-from json_schema import JsonSchema
+from .json_schema import JsonSchema
 
 
 def dumps(j, *args, **kwargs):
-    u"""Recebe um json e retorna um schema."""
+    """Recebe um json e retorna um schema."""
     def montador(valor):
-        u"""Função recursiva para montar o schema."""
+        """Função recursiva para montar o schema."""
         if isinstance(valor, dict):
             retorno = {}
-            for c, v in valor.items():
+            for c, v in list(valor.items()):
                 retorno[c] = montador(v)
             return retorno
         elif isinstance(valor, list) or isinstance(valor, tuple):
@@ -20,7 +20,7 @@ def dumps(j, *args, **kwargs):
             for i in valor:
                 retorno.append(montador(i))
             return retorno
-        elif isinstance(valor, str) or isinstance(valor, unicode):
+        elif isinstance(valor, str) or isinstance(valor, str):
             return "str:%s" % valor
         elif isinstance(valor, bool):
             return "bool:%s" % valor
@@ -31,14 +31,14 @@ def dumps(j, *args, **kwargs):
         elif valor is None:
             return "null"
         else:
-            raise Exception(u"O json nao parece ser valido")
+            raise Exception("O json nao parece ser valido")
 
     data = json.loads(j)
     return json.dumps(montador(data), *args, **kwargs)
 
 
 def diff_jsons(b, a):
-    u"""Mostra se há diferença entre 2 jsons."""
+    """Mostra se há diferença entre 2 jsons."""
     schema_a = JsonSchema(dumps(a))
     if schema_a == b:
         return True
@@ -47,7 +47,7 @@ def diff_jsons(b, a):
 
 
 def diff(a, b):
-    u"""Mostra a diferença entre JSONs."""
+    """Mostra a diferença entre JSONs."""
     def type_name(obj):
         """Traduz a nomeclatura python para javascript."""
         return {"str": "string",
@@ -76,52 +76,52 @@ def diff(a, b):
                     apenas_a = chaves_a - chaves_b
                     apenas_b = chaves_b - chaves_a
                     for chave in apenas_a:
-                        retorno[chave] = False, u"Exists on left branch only"
+                        retorno[chave] = False, "Exists on left branch only"
                     for chave in apenas_b:
-                        retorno[chave] = False, u"Exists on right branch only"
+                        retorno[chave] = False, "Exists on right branch only"
                     for chave in chaves_a & chaves_b:
                         retorno[chave] = comparador(ia[chave], ib[chave])
                     return retorno
             elif isinstance(ia, list):
                 retorno = []
-                for i in xrange(min([len(ia), len(ib)])):
+                for i in range(min([len(ia), len(ib)])):
                     retorno.append(comparador(ia[i], ib[i]))
                 if len(ia) > len(ib):
-                    retorno += [(False, u"%s '%s' exists on left branch only" %
+                    retorno += [(False, "%s '%s' exists on left branch only" %
                                 (type_name(i), i)) for i in ia[len(ib):]]
                 elif len(ia) < len(ib):
-                    retorno += [(False, u"%s '%s' exists on right branch only" %
+                    retorno += [(False, "%s '%s' exists on right branch only" %
                                 (type_name(i), i)) for i in ib[len(ia):]]
                 return retorno
-            elif type(ia) in [str, int, float, bool, unicode]:
+            elif type(ia) in [str, int, float, bool, str]:
                 var_type = type_name(ia)
-                return False, u"Left %s '%s' differ from right %s '%s'" % (
+                return False, "Left %s '%s' differ from right %s '%s'" % (
                                var_type, ia, var_type, ib)
         else:
             if {type(ia), type(ib)}.issubset({int, str, float, bool, type(None)}):
-                return (False, u"Left %s '%s' differ from right %s '%s'" % (
+                return (False, "Left %s '%s' differ from right %s '%s'" % (
                                 type_name(ia), ia, type_name(ib), ib))
             else:
                 if type(ia) in [dict, list]:
-                    left = u"Left is a %s structure and differ from " % type_name(ia)
+                    left = "Left is a %s structure and differ from " % type_name(ia)
                 else:
-                    left = u"Left %s '%s' differ from " % (type_name(ia), ia)
+                    left = "Left %s '%s' differ from " % (type_name(ia), ia)
                 if type(ib) in [dict, list]:
-                    right = u"right which is %s structure" % type_name(ib)
+                    right = "right which is %s structure" % type_name(ib)
                 else:
-                    right = u"right %s '%s'" % (type_name(ib), ib)
-                return (False, u"%s%s" % (left, right))
+                    right = "right %s '%s'" % (type_name(ib), ib)
+                return (False, "%s%s" % (left, right))
 
     ja, jb = json.loads(a), json.loads(b)
     return comparador(ja, jb)
 
 
 def diff_color_string(a, b, indent=4):
-    u"""Retorna uma string com color code mostrando as diferenças."""
+    """Retorna uma string com color code mostrando as diferenças."""
     def replacer(d):
         if isinstance(d, dict):
             r = {}
-            for k, v in d.items():
+            for k, v in list(d.items()):
                 r[k] = replacer(v)
             return r
         elif isinstance(d, list):
@@ -130,12 +130,12 @@ def diff_color_string(a, b, indent=4):
                 r.append(replacer(i))
             return r
         elif isinstance(d, tuple):
-            return u"\033[91m%s\033[92m" % d[1]
+            return "\033[91m%s\033[92m" % d[1]
         else:
             return d
     diferencas = replacer(diff(a, b))
     r = json.dumps(diferencas,
                    indent=indent).replace("\\u001b[91m",
-                                          "\033[91m").replace("\u001b[92m",
+                                          "\033[91m").replace("\\u001b[92m",
                                                               "\033[92m")
-    return u"\033[92m%s\033[0m" % r
+    return "\033[92m%s\033[0m" % r

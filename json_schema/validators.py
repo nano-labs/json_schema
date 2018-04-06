@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-u"""Validators padrão a serem usados pelo json_schema."""
+"""Validators padrão a serem usados pelo json_schema."""
 
 import re
 from datetime import datetime
@@ -7,7 +7,7 @@ from datetime import datetime
 
 class StringValidator:
 
-    u"""Classe apenas para agrupar os metodos do validador.
+    """Classe apenas para agrupar os metodos do validador.
 
     Validação:
         Checa se o item é um string e se o tamanho máximo não
@@ -29,7 +29,7 @@ class StringValidator:
     @classmethod
     def validator(cls, item, item_schema):
         """Validador de fato da string."""
-        if isinstance(item, str) or isinstance(item, unicode):
+        if isinstance(item, str) or isinstance(item, str):
             if item_schema.startswith("str:"):
                 try:
                     tamanho = int(item_schema.replace("str:", ""))
@@ -44,7 +44,7 @@ class StringValidator:
 
 class IntValidator:
 
-    u"""
+    """
     Classe apenas para agrupar os metodos do validador.
 
     Validação:
@@ -80,7 +80,7 @@ class IntValidator:
 
 class FloatValidator:
 
-    u"""
+    """
     Classe apenas para agrupar os metodos do validador.
 
     Validação:
@@ -117,7 +117,7 @@ class FloatValidator:
 
 class UrlValidator:
 
-    u"""
+    """
     Classe apenas para agrupar os metodos do validador.
 
     Validação:
@@ -156,7 +156,7 @@ class UrlValidator:
 
 class BooleanValidator:
 
-    u"""
+    """
     Classe apenas para agrupar os metodos do validador.
 
     Validação:
@@ -187,7 +187,7 @@ class BooleanValidator:
 
 class RegexValidator:
 
-    u"""
+    """
     Classe apenas para agrupar os metodos do validador.
 
     Validação:
@@ -217,7 +217,7 @@ class RegexValidator:
 
 class AnyValidator:
 
-    u"""
+    """
     Classe apenas para agrupar os metodos do validador.
 
     Validação:
@@ -243,7 +243,7 @@ class AnyValidator:
 
 class NullValidator:
 
-    u"""
+    """
     Classe apenas para agrupar os metodos do validador.
 
     Validação:
@@ -269,7 +269,7 @@ class NullValidator:
 
 class PythonValidator:
 
-    u"""
+    """
     Classe apenas para agrupar os metodos do validador.
 
     Validação:
@@ -289,7 +289,7 @@ class PythonValidator:
 
     @classmethod
     def validator(cls, item, item_schema):
-        u"""Testa o código python."""
+        """Testa o código python."""
         src = item_schema.replace("python:", "")
         src = """def temporary_function(value):\n    return %s""" % src
         try:
@@ -301,7 +301,7 @@ class PythonValidator:
 
 class DatetimeValidator:
 
-    u"""
+    """
     Classe apenas para agrupar os metodos do validador.
 
     Validação:
@@ -332,7 +332,7 @@ class DatetimeValidator:
 
 class EmptyValidator:
 
-    u"""
+    """
     Classe apenas para agrupar os metodos do validador.
 
     Validação:
@@ -354,7 +354,7 @@ class EmptyValidator:
 
     @classmethod
     def validator(cls, item, item_schema):
-        u"""Testa se o item é de dado tipo e está vazio."""
+        """Testa se o item é de dado tipo e está vazio."""
         tipo = item_schema.replace("empty:", "")
         tipos = {"dict": dict, "hash": dict, "object": dict, "list": list}
         return isinstance(item, tipos[tipo]) and len(item) == 0
