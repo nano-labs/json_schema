@@ -20,7 +20,7 @@ def dumps(j, *args, **kwargs):
             for i in valor:
                 retorno.append(montador(i))
             return retorno
-        elif isinstance(valor, str) or isinstance(valor, str):
+        elif isinstance(valor, str) or isinstance(valor, unicode):
             return "str:%s" % valor
         elif isinstance(valor, bool):
             return "bool:%s" % valor
