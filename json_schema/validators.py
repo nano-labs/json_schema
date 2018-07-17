@@ -29,7 +29,7 @@ class StringValidator:
     @classmethod
     def validator(cls, item, item_schema):
         """Validador de fato da string."""
-        if isinstance(item, str) or isinstance(item, str):
+        if isinstance(item, str) or isinstance(item, unicode):
             if item_schema.startswith("str:"):
                 try:
                     tamanho = int(item_schema.replace("str:", ""))
