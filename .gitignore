@@ -1,1 +1,4 @@
 *.pyc
+/build
+/dist
+/json_schema_matcher.egg-info
