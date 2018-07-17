@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 """Validators padrão a serem usados pelo json_schema."""
 
+import six
 import re
 from datetime import datetime
 
@@ -29,7 +30,7 @@ class StringValidator:
     @classmethod
     def validator(cls, item, item_schema):
         """Validador de fato da string."""
-        if isinstance(item, str) or isinstance(item, unicode):
+        if isinstance(item, six.string_types):
             if item_schema.startswith("str:"):
                 try:
                     tamanho = int(item_schema.replace("str:", ""))

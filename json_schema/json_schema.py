@@ -25,6 +25,7 @@ In [7]: js == um_json
 Out[7]: True
 """
 
+import six
 try:
     import simplejson as json
 except:
@@ -55,7 +56,7 @@ def dumps(j, *args, **kwargs):
                     return b
                 raise Exception('Not Match')
             return [merge_schema_tree(a[i], b[i]) for i in range(len(a))]
-        elif isinstance(a, str) or isinstance(a, unicode):
+        elif isinstance(a, six.string_types):
             if a == "any":
                 return b
             elif b == "any":
@@ -82,7 +83,7 @@ def dumps(j, *args, **kwargs):
                 return False
             resultados = [_match_tree(a[i], b[i]) for i in range(len(a))]
             return all(resultados)
-        elif isinstance(a, str) or isinstance(a, unicode):
+        elif isinstance(a, six.string_types):
             return a.startswith("any") or b.startswith("any") or a == b
 
     def montador(valor):
@@ -105,7 +106,7 @@ def dumps(j, *args, **kwargs):
                         final = merge_schema_tree(final, r)
                     retorno = [final, "..."]
             return retorno or ["any|null", "..."]
-        elif isinstance(valor, str) or isinstance(valor, unicode):
+        elif isinstance(valor, six.string_types):
             return "str"
         elif isinstance(valor, bool):
             return "bool"
@@ -216,7 +217,7 @@ class JsonSchema(object):
                 if not self.validar_schema(item):
                     return False
             return True
-        elif isinstance(schema, str) or isinstance(schema, unicode):
+        elif isinstance(schema, six.string_types):
             items_schema = [schema]
             if "|" in schema:
                 items_schema = schema.split("|")
@@ -268,7 +269,7 @@ class JsonSchema(object):
             return [self._comparar(item_lista, item_schema_list)
                     for item_lista, item_schema_list in zip(item, item_schema)]
         # Se for uma string ou unicode
-        elif isinstance(item_schema, str) or isinstance(item_schema, unicode):
+        elif isinstance(item_schema, six.string_types):
             all_results = []
             items_schema = [item_schema]
             if "|" in item_schema:

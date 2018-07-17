@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+import six
 try:
     import simplejson as json
 except:
@@ -20,7 +21,7 @@ def dumps(j, *args, **kwargs):
             for i in valor:
                 retorno.append(montador(i))
             return retorno
-        elif isinstance(valor, str) or isinstance(valor, unicode):
+        elif isinstance(valor, six.string_types):
             return "str:%s" % valor
         elif isinstance(valor, bool):
             return "bool:%s" % valor
