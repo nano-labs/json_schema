@@ -294,7 +294,7 @@ class PythonValidator:
         src = item_schema.replace("python:", "")
         src = """def temporary_function(value):\n    return %s""" % src
         try:
-            exec(src)
+            exec(src, None, globals())
             return temporary_function(item)
         except:
             return False

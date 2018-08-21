@@ -79,7 +79,7 @@ def i_cant_have_schema(context, schema):
     """Falha ao carregar o schema."""
     try:
         s = json_schema.loads(getattr(context, schema))
-    except Exception, e:
+    except Exception as e:
         assert str(e) == "O schema nao parece ser valido"
 
 
